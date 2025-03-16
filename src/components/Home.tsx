@@ -1,5 +1,7 @@
+// src/components/Home.tsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Loader from "./Loader"; // Import the Loader component
 
 interface Book {
   id: string;
@@ -42,7 +44,7 @@ const Home: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader />; // Use the Loader component
   }
 
   if (error) {
