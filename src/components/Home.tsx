@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "./Loader";
+import { motion } from "framer-motion";
+import "./design/Home.css";
 
 interface Book {
   id: string;
@@ -64,28 +66,34 @@ const Home: React.FC = () => {
               key={book.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
             >
-              <img
+              <motion.img
                 src={book.volumeInfo?.imageLinks?.thumbnail}
                 alt={book.volumeInfo?.title}
                 className="w-full h-64 object-cover"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
               />
               <div className="p-4 flex flex-col flex-grow justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold mb-2 text-gray-800">
+                  <h2 className="text-lg font-semibold mb-2 text-gray-800 title-typewriter">
                     {book.volumeInfo?.title}
                   </h2>
                   <p className="text-sm text-gray-600 mb-3">
                     {book.volumeInfo?.authors?.join(", ") || "Unknown Author"}
                   </p>
                 </div>
-                <a
+                <motion.a
                   href={book.volumeInfo?.previewLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded block text-center hover:from-green-500 hover:to-green-700 transition-colors duration-300"
+                  className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded block text-center"
+                  whileHover={{
+                    background: "linear-gradient(to right, #55c57a, #28b485)",
+                  }}
+                  transition={{ duration: 0.3 }}
                 >
                   Preview
-                </a>
+                </motion.a>
               </div>
             </div>
           ))}
