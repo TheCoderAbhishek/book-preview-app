@@ -3,8 +3,8 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { FaBars, FaTimes, FaSearch } from "react-icons/fa"; // Import FaSearch
-import React, { useState } from "react"; // Import useState
+import { FaBars, FaTimes, FaSearch } from "react-icons/fa";
+import React, { useState } from "react";
 
 const navigation = [
   { name: "Home", href: "/", current: false },
@@ -14,8 +14,8 @@ const navigation = [
 ];
 
 export default function Navbar() {
-  const [isSearchVisible, setSearchVisible] = useState(false); // State for search box visibility
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [isSearchVisible, setSearchVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchToggle = () => {
     setSearchVisible(!isSearchVisible);
@@ -31,7 +31,6 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-            {/* Mobile menu button*/}
             <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
               <span className="absolute -inset-0.5" />
               <span className="sr-only">Open main menu</span>
@@ -47,7 +46,6 @@ export default function Navbar() {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              {/* Brand Logo (Replace with your logo) */}
               <img
                 alt="Book Preview Logo"
                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
@@ -76,7 +74,11 @@ export default function Navbar() {
               <FaSearch className="h-6 w-6" />
             </button>
             {isSearchVisible && (
-              <div className="absolute top-full mt-2 right-0 bg-white rounded-md shadow-lg p-2 w-64 md:w-80 lg:w-96 z-10">
+              <div
+                className={`absolute top-full mt-2 right-0 bg-white rounded-md shadow-lg p-2 z-10 ${
+                  window.innerWidth < 640 ? "w-screen" : "w-64 md:w-80 lg:w-96"
+                }`}
+              >
                 <input
                   type="text"
                   placeholder="Search books..."
