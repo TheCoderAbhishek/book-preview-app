@@ -3,17 +3,29 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaSearch } from "react-icons/fa"; // Import FaSearch
+import React, { useState } from "react"; // Import useState
 
 const navigation = [
   { name: "Home", href: "/", current: false },
   { name: "Books Category", href: "/categories", current: false },
   { name: "About", href: "/about", current: false },
   { name: "Contact", href: "/contact", current: false },
-  { name: "Search", href: "/search", current: false },
 ];
 
 export default function Navbar() {
+  const [isSearchVisible, setSearchVisible] = useState(false); // State for search box visibility
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+
+  const handleSearchToggle = () => {
+    setSearchVisible(!isSearchVisible);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    // You can add your search logic here
+  };
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -38,7 +50,7 @@ export default function Navbar() {
               {/* Brand Logo (Replace with your logo) */}
               <img
                 alt="Book Preview Logo"
-                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" // Replace with your logo URL
+                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
                 className="h-8 w-auto"
               />
             </div>
@@ -57,7 +69,23 @@ export default function Navbar() {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {/* Removed Notification and Profile elements */}
+            <button
+              onClick={handleSearchToggle}
+              className="text-gray-400 hover:text-white focus:outline-none"
+            >
+              <FaSearch className="h-6 w-6" />
+            </button>
+            {isSearchVisible && (
+              <div className="absolute top-full mt-2 right-0 bg-white rounded-md shadow-lg p-2 w-64 md:w-80 lg:w-96 z-10">
+                <input
+                  type="text"
+                  placeholder="Search books..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="w-full p-2 border rounded-md text-gray-800"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

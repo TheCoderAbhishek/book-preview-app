@@ -7,7 +7,6 @@ import Footer from "./components/Footer";
 // Create placeholder components for your pages
 const About = () => <h1>About Page</h1>;
 const Contact = () => <h1>Contact Page</h1>;
-const Search = () => <h1>Search Page</h1>;
 
 export default function App() {
   return (
@@ -19,7 +18,6 @@ export default function App() {
           <Route path="/categories" element={<Categories />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/search" element={<Search />} />
         </Routes>
         <Footer />
       </div>
