@@ -48,7 +48,7 @@ export default function Navbar() {
             <div className="flex shrink-0 items-center">
               <img
                 alt="Book Preview Logo"
-                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+                src="/logo.png"
                 className="h-8 w-auto"
               />
             </div>
