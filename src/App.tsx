@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Categories from "./components/Categories";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Footer from "./components/Footer";
 
 // Create placeholder components for your pages
 const About = () => <h1>About Page</h1>;
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/search" element={<Search />} />
         </Routes>
+        <Footer />
       </div>
     </BrowserRouter>
   );
