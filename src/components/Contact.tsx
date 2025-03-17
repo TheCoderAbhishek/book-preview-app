@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -30,6 +30,16 @@ const Contact: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (submitted) {
+      const timer = setTimeout(() => {
+        setSubmitted(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [submitted]);
+
   const inputVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -46,7 +56,7 @@ const Contact: React.FC = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-gray-100 min-h-screen py-8"
+      className="bg-gray-100 py-8"
     >
       <div className="container mx-auto max-w-md bg-white rounded-lg shadow-md p-8">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
