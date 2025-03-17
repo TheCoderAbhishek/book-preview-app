@@ -3,10 +3,10 @@ import Home from "./components/Home";
 import Categories from "./components/Categories";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
+import Contact from "./components/Contact";
 
 // Create placeholder components for your pages
 const About = () => <h1>About Page</h1>;
-const Contact = () => <h1>Contact Page</h1>;
 
 export default function App() {
   return (
