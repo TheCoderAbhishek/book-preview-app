@@ -1,11 +1,6 @@
 {
   "routes": [
     {
-      "route": "/contact",
-      "serve": "index.html",
-      "statusCode": 200
-    },
-    {
       "route": "/*",
       "serve": "index.html",
       "statusCode": 200
