@@ -10,8 +10,9 @@ import {
   FaSpinner,
   FaTimesCircle,
 } from "react-icons/fa";
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import debounce from "lodash/debounce";
+import axios from "axios";
 
 const navigation = [
   { name: "Home", href: "/", current: false },
@@ -20,51 +21,78 @@ const navigation = [
   { name: "Contact", href: "/contact", current: false },
 ];
 
-interface SearchResult {
-  id: number;
-  title: string;
+interface Book {
+  id: string;
+  volumeInfo: {
+    title: string;
+    authors?: string[];
+    imageLinks?: {
+      thumbnail: string;
+    };
+    previewLink: string;
+  };
 }
+
+const debouncedSearch = debounce(
+  async (
+    searchTerm: string,
+    setIsSearching: React.Dispatch<React.SetStateAction<boolean>>,
+    setSearchResults: React.Dispatch<React.SetStateAction<Book[]>>,
+    setSearchError: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    setIsSearching(true);
+    setSearchError(null);
+
+    try {
+      if (searchTerm) {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/volumes?q=${searchTerm}&maxResults=3`
+        );
+        setSearchResults(response.data.items || []);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (err) {
+      setSearchResults([]);
+      setSearchError(
+        axios.isAxiosError(err)
+          ? err.message
+          : "An unexpected search error occurred."
+      );
+    } finally {
+      setIsSearching(false);
+    }
+  },
+  300
+);
 
 export default function Navbar() {
   const [isSearchVisible, setSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<Book[]>([]);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const handleSearchToggle = () => {
     setSearchVisible(!isSearchVisible);
     if (!isSearchVisible) {
       setSearchTerm("");
       setSearchResults([]);
+      setSearchError(null);
     }
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    debouncedSearch(event.target.value);
+    debouncedSearch(
+      event.target.value,
+      setIsSearching,
+      setSearchResults,
+      setSearchError
+    );
   };
-
-  const debouncedSearch = useCallback(
-    debounce((searchTerm: string) => {
-      setIsSearching(true);
-      // Replace with your actual search logic (e.g., API call)
-      // Simulate async search for demonstration
-      setTimeout(() => {
-        console.log("Performing search:", searchTerm);
-        // Replace with your actual search results
-        setSearchResults(
-          searchTerm
-            ? [
-                { id: 1, title: `Result 1 for "${searchTerm}"` },
-                { id: 2, title: `Result 2 for "${searchTerm}"` },
-              ]
-            : []
-        );
-        setIsSearching(false);
-      }, 500);
-    }, 300),
-    [setIsSearching, setSearchResults]
-  );
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -133,6 +161,7 @@ export default function Navbar() {
                       onClick={() => {
                         setSearchTerm("");
                         setSearchResults([]);
+                        setSearchError(null);
                       }}
                       className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800"
                     >
@@ -143,14 +172,33 @@ export default function Navbar() {
                     <FaSpinner className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-gray-600" />
                   )}
                 </div>
+                {searchError && (
+                  <div className="text-red-500 mt-2">{searchError}</div>
+                )}
                 {searchResults.length > 0 && (
                   <ul className="mt-2">
-                    {searchResults.map((result) => (
+                    {searchResults.map((book) => (
                       <li
-                        key={result.id}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        key={book.id}
+                        className="p-2 hover:bg-gray-100 cursor-pointer flex items-center"
                       >
-                        {result.title}
+                        {book.volumeInfo.imageLinks &&
+                          book.volumeInfo.imageLinks.thumbnail && (
+                            <img
+                              src={book.volumeInfo.imageLinks.thumbnail}
+                              alt={book.volumeInfo.title}
+                              className="h-12 w-8 object-cover mr-2"
+                            />
+                          )}
+                        <div>
+                          <p className="font-semibold">
+                            {book.volumeInfo.title}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {book.volumeInfo.authors?.join(", ") ||
+                              "Unknown Author"}
+                          </p>
+                        </div>
                       </li>
                     ))}
                   </ul>
