@@ -13,6 +13,7 @@ import {
 import React, { useState } from "react";
 import debounce from "lodash/debounce";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const navigation = [
   { name: "Home", href: "/", current: false },
@@ -69,6 +70,7 @@ const debouncedSearch = debounce(
 );
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [isSearchVisible, setSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -92,6 +94,11 @@ export default function Navbar() {
       setSearchResults,
       setSearchError
     );
+  };
+
+  const handleBookClick = (bookId: string) => {
+    navigate(`/book-details?id=${bookId}`);
+    setSearchVisible(false);
   };
 
   return (
@@ -181,6 +188,7 @@ export default function Navbar() {
                       <li
                         key={book.id}
                         className="p-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                        onClick={() => handleBookClick(book.id)}
                       >
                         {book.volumeInfo.imageLinks &&
                           book.volumeInfo.imageLinks.thumbnail && (
@@ -217,6 +225,7 @@ export default function Navbar() {
               as="a"
               href={item.href}
               className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+              onClick={() => setSearchVisible(false)}
             >
               {item.name}
             </DisclosureButton>

@@ -4,6 +4,7 @@ import Categories from "./components/Categories";
 import Contact from "./components/Contact";
 import Layout from "./components/Layout";
 import About from "./components/About";
+import BookDetails from "./components/BookDetails";
 
 const Router = () => {
   return (
@@ -14,6 +15,7 @@ const Router = () => {
           <Route path="/categories" element={<Categories />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/book-details" element={<BookDetails />} />
         </Routes>
       </Layout>
     </BrowserRouter>
