@@ -6,6 +6,7 @@ import Layout from "./components/Layout";
 import About from "./components/About";
 import BookDetails from "./components/BookDetails";
 import WhoWeAre from "./components/WhoWeAre";
+import Privacy from "./components/Privacy";
 
 const Router = () => {
   return (
@@ -18,6 +19,7 @@ const Router = () => {
           <Route path="/who-we-are" element={<WhoWeAre />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/book-details" element={<BookDetails />} />
+          <Route path="/privacy" element={<Privacy />} />
         </Routes>
       </Layout>
     </BrowserRouter>
