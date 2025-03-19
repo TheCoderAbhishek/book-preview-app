@@ -5,6 +5,7 @@ import Contact from "./components/Contact";
 import Layout from "./components/Layout";
 import About from "./components/About";
 import BookDetails from "./components/BookDetails";
+import WhoWeAre from "./components/WhoWeAre";
 
 const Router = () => {
   return (
@@ -14,6 +15,7 @@ const Router = () => {
           <Route path="/" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/about" element={<About />} />
+          <Route path="/who-we-are" element={<WhoWeAre />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/book-details" element={<BookDetails />} />
         </Routes>
