@@ -3,8 +3,15 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { FaBars, FaTimes, FaSearch } from "react-icons/fa";
-import React, { useState } from "react";
+import {
+  FaBars,
+  FaTimes,
+  FaSearch,
+  FaSpinner,
+  FaTimesCircle,
+} from "react-icons/fa";
+import React, { useState, useCallback } from "react";
+import debounce from "lodash/debounce";
 
 const navigation = [
   { name: "Home", href: "/", current: false },
@@ -13,18 +20,51 @@ const navigation = [
   { name: "Contact", href: "/contact", current: false },
 ];
 
+interface SearchResult {
+  id: number;
+  title: string;
+}
+
 export default function Navbar() {
   const [isSearchVisible, setSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
   const handleSearchToggle = () => {
     setSearchVisible(!isSearchVisible);
+    if (!isSearchVisible) {
+      setSearchTerm("");
+      setSearchResults([]);
+    }
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    // You can add your search logic here
+    debouncedSearch(event.target.value);
   };
+
+  const debouncedSearch = useCallback(
+    debounce((searchTerm: string) => {
+      setIsSearching(true);
+      // Replace with your actual search logic (e.g., API call)
+      // Simulate async search for demonstration
+      setTimeout(() => {
+        console.log("Performing search:", searchTerm);
+        // Replace with your actual search results
+        setSearchResults(
+          searchTerm
+            ? [
+                { id: 1, title: `Result 1 for "${searchTerm}"` },
+                { id: 2, title: `Result 2 for "${searchTerm}"` },
+              ]
+            : []
+        );
+        setIsSearching(false);
+      }, 500);
+    }, 300),
+    [setIsSearching, setSearchResults]
+  );
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -79,13 +119,42 @@ export default function Navbar() {
                   window.innerWidth < 640 ? "w-screen" : "w-64 md:w-80 lg:w-96"
                 }`}
               >
-                <input
-                  type="text"
-                  placeholder="Search books..."
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  className="w-full p-2 border rounded-md text-gray-800"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search books..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    aria-label="Search books"
+                    className="w-full p-2 border rounded-md text-gray-800"
+                  />
+                  {searchTerm && (
+                    <button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSearchResults([]);
+                      }}
+                      className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                    >
+                      <FaTimesCircle />
+                    </button>
+                  )}
+                  {isSearching && (
+                    <FaSpinner className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-gray-600" />
+                  )}
+                </div>
+                {searchResults.length > 0 && (
+                  <ul className="mt-2">
+                    {searchResults.map((result) => (
+                      <li
+                        key={result.id}
+                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                      >
+                        {result.title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </div>
