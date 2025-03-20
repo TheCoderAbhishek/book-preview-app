@@ -1,10 +1,9 @@
-// Home.tsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "./Loader";
 import { motion } from "framer-motion";
 import "./design/Home.css";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 interface Book {
   id: string;
@@ -22,19 +21,25 @@ const Home: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 15;
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
-    const fetchRandomBooks = async () => {
+    const fetchBooks = async () => {
       setLoading(true);
       setError(null);
       try {
+        const startIndex = (currentPage - 1) * booksPerPage;
         const response = await axios.get(
           `${
             import.meta.env.VITE_API_BASE_URL
-          }/volumes?q=best-selling&maxResults=15`
+          }/volumes?q=best-selling&maxResults=${booksPerPage}&startIndex=${startIndex}`
         );
+
         setBooks(response.data.items || []);
+        setTotalPages(Math.ceil(response.data.totalItems / booksPerPage));
       } catch (err) {
         if (axios.isAxiosError(err)) {
           setError(err.message);
@@ -46,12 +51,49 @@ const Home: React.FC = () => {
       }
     };
 
-    fetchRandomBooks();
-  }, []);
+    fetchBooks();
+  }, [currentPage]);
 
   const handlePreviewClick = (bookId: string) => {
-    //function to handle click event.
-    navigate(`/book-details?id=${bookId}`); //navigate to book detail page with book ID.
+    navigate(`/book-details?id=${bookId}`);
+  };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, currentPage + 1);
+
+    if (endPage - startPage < 2) {
+      if (currentPage === 1) {
+        endPage = Math.min(totalPages, 3);
+      } else {
+        startPage = Math.max(1, totalPages - 2);
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === i
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    return <div className="flex justify-center mt-8">{pages}</div>;
   };
 
   if (loading) {
@@ -90,7 +132,7 @@ const Home: React.FC = () => {
                     {book.volumeInfo?.authors?.join(", ") || "Unknown Author"}
                   </p>
                 </div>
-                <motion.button // Change <a> to <button> and add onClick handler
+                <motion.button
                   onClick={() => handlePreviewClick(book.id)}
                   className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded block text-center"
                   whileHover={{
@@ -104,6 +146,7 @@ const Home: React.FC = () => {
             </div>
           ))}
         </div>
+        {totalPages > 1 && renderPagination()}
       </div>
     </div>
   );
