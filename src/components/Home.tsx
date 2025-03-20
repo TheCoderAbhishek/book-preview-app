@@ -1,8 +1,10 @@
+// Home.tsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "./Loader";
 import { motion } from "framer-motion";
 import "./design/Home.css";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 interface Book {
   id: string;
@@ -20,6 +22,7 @@ const Home: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchRandomBooks = async () => {
@@ -45,6 +48,11 @@ const Home: React.FC = () => {
 
     fetchRandomBooks();
   }, []);
+
+  const handlePreviewClick = (bookId: string) => {
+    //function to handle click event.
+    navigate(`/book-details?id=${bookId}`); //navigate to book detail page with book ID.
+  };
 
   if (loading) {
     return <Loader />;
@@ -82,10 +90,8 @@ const Home: React.FC = () => {
                     {book.volumeInfo?.authors?.join(", ") || "Unknown Author"}
                   </p>
                 </div>
-                <motion.a
-                  href={book.volumeInfo?.previewLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <motion.button // Change <a> to <button> and add onClick handler
+                  onClick={() => handlePreviewClick(book.id)}
                   className="bg-gradient-to-r from-green-400 to-green-600 text-white p-2 rounded block text-center"
                   whileHover={{
                     background: "linear-gradient(to right, #55c57a, #28b485)",
@@ -93,7 +99,7 @@ const Home: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   Preview
-                </motion.a>
+                </motion.button>
               </div>
             </div>
           ))}
