@@ -77,6 +77,22 @@ const Home: React.FC = () => {
       }
     }
 
+    // Previous Page Arrow
+    pages.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`px-2 py-1 mx-1 rounded ${
+          currentPage === 1
+            ? "opacity-50 cursor-not-allowed"
+            : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        &lt;
+      </button>
+    );
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
@@ -92,6 +108,22 @@ const Home: React.FC = () => {
         </button>
       );
     }
+
+    // Next Page Arrow
+    pages.push(
+      <button
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`px-2 py-1 mx-1 rounded ${
+          currentPage === totalPages
+            ? "opacity-50 cursor-not-allowed"
+            : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        &gt;
+      </button>
+    );
 
     return <div className="flex justify-center mt-8">{pages}</div>;
   };
