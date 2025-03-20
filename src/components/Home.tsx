@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Loader from "./Loader";
 import { motion } from "framer-motion";
 import "./design/Home.css";
@@ -42,7 +42,41 @@ const Home: React.FC = () => {
         setTotalPages(Math.ceil(response.data.totalItems / booksPerPage));
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          setError(err.message);
+          const axiosError = err as AxiosError;
+
+          if (axiosError.response) {
+            switch (axiosError.response.status) {
+              case 400:
+                setError(
+                  "Bad Request: The server could not understand the request."
+                );
+                break;
+              case 401:
+                setError("Unauthorized: Authentication is required.");
+                break;
+              case 403:
+                setError(
+                  "Forbidden: You don't have permission to access this resource."
+                );
+                break;
+              case 404:
+                setError("Not Found: The requested resource was not found.");
+                break;
+              case 500:
+                setError(
+                  "Internal Server Error: Something went wrong on the server."
+                );
+                break;
+              default:
+                setError(
+                  `An error occurred: ${axiosError.response.status} - ${axiosError.response.statusText}`
+                );
+            }
+          } else if (axiosError.request) {
+            setError("Network Error: Could not reach the server.");
+          } else {
+            setError(`Error: ${axiosError.message}`);
+          }
         } else {
           setError("An unexpected error occurred.");
         }
@@ -66,16 +100,48 @@ const Home: React.FC = () => {
     if (totalPages <= 1) return null;
 
     const pages = [];
-    let startPage = Math.max(1, currentPage - 1);
-    let endPage = Math.min(totalPages, currentPage + 1);
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
 
-    if (endPage - startPage < 2) {
-      if (currentPage === 1) {
-        endPage = Math.min(totalPages, 3);
+    if (endPage - startPage < 4) {
+      if (currentPage < 3) {
+        endPage = Math.min(totalPages, 5);
       } else {
-        startPage = Math.max(1, totalPages - 2);
+        startPage = Math.max(1, totalPages - 4);
       }
     }
+
+    // First Page Button
+    pages.push(
+      <button
+        key="first"
+        onClick={() => handlePageChange(1)}
+        disabled={currentPage === 1}
+        className={`px-2 py-1 mx-1 rounded ${
+          currentPage === 1
+            ? "opacity-50 cursor-not-allowed"
+            : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        First
+      </button>
+    );
+
+    // Previous 2 Pages Arrow
+    pages.push(
+      <button
+        key="prev2"
+        onClick={() => handlePageChange(Math.max(1, currentPage - 2))}
+        disabled={currentPage <= 2}
+        className={`px-2 py-1 mx-1 rounded ${
+          currentPage <= 2
+            ? "opacity-50 cursor-not-allowed"
+            : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        &lt;&lt;
+      </button>
+    );
 
     // Previous Page Arrow
     pages.push(
@@ -125,6 +191,38 @@ const Home: React.FC = () => {
       </button>
     );
 
+    // Next 2 Pages Arrow
+    pages.push(
+      <button
+        key="next2"
+        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 2))}
+        disabled={currentPage >= totalPages - 1}
+        className={`px-2 py-1 mx-1 rounded ${
+          currentPage >= totalPages - 1
+            ? "opacity-50 cursor-not-allowed"
+            : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        &gt;&gt;
+      </button>
+    );
+
+    // Last Page Button
+    pages.push(
+      <button
+        key="last"
+        onClick={() => handlePageChange(totalPages)}
+        disabled={currentPage === totalPages}
+        className={`px-2 py-1 mx-1 rounded ${
+          currentPage === totalPages
+            ? "opacity-50 cursor-not-allowed"
+            : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        Last
+      </button>
+    );
+
     return <div className="flex justify-center mt-8">{pages}</div>;
   };
 
@@ -133,16 +231,18 @@ const Home: React.FC = () => {
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="text-red-500 text-center mt-4 p-4">Error: {error}</div>
+    ); //Added padding.
   }
 
   return (
     <div className="bg-gradient-to-r from-gray-100 to-gray-200 min-h-screen p-4">
       <div className="container mx-auto">
-        <h1 className="text-3xl font-semibold mb-8 text-gray-800 text-center">
+        <h1 className="text-3xl font-semibold mb-8 text-gray-800 text-center p-2">
           Few Best-Selling Books
         </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 p-2">
           {books.map((book) => (
             <div
               key={book.id}
@@ -151,7 +251,7 @@ const Home: React.FC = () => {
               <motion.img
                 src={book.volumeInfo?.imageLinks?.thumbnail}
                 alt={book.volumeInfo?.title}
-                className="w-full h-64 object-cover"
+                className="w-full h-48 sm:h-64 object-cover" // Responsive image height
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
               />
