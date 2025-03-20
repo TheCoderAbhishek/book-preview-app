@@ -7,7 +7,11 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
         <div className="mb-4 md:mb-0">
           <p>
-            &copy; {new Date().getFullYear()} AridentRIS™. All rights reserved.
+            &copy; {new Date().getFullYear()}{" "}
+            <a href="https://innovatewithabhi.github.io/AridentRIS/home">
+              AridentRIS™
+            </a>
+            . All rights reserved.
           </p>
         </div>
         <div className="flex space-x-4">
